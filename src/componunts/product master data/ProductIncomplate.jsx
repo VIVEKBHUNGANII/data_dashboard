@@ -3,8 +3,9 @@ import React, { useState } from 'react'
 
 const ProductIncomplate = () => {
    const [loading, setLoading] = useState(false);
+   const [currentPage , setCurrentPage] = useState(1)
    const data = []; // Placeholder for data, replace with actual data fetching logic
-    const currentPage = 1; // Placeholder for current page, replace with actual pagination logic
+    // const currentPage = 1; // Placeholder for current page, replace with actual pagination logic
     const totalRecords = 0; // Placeholder for total records, replace with actual data fetching logic
     const limit = 1000; // Placeholder for limit, replace with actual pagination logic
     const totalPages = Math.ceil(totalRecords / limit);

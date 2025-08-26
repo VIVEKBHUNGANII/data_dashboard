@@ -32,6 +32,8 @@ import Dasboard2 from "./componunts/Dasboard2";
 import ListingDataReport from "./componunts/ListingDataReport";
 import ProductDataReport from "./componunts/ProductDataReport";
 import MisReportTable from "./componunts/Misreport";
+import { element } from "prop-types";
+import AmazonScraper from "./componunts/scrapper/AmazonScrapper";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -199,7 +201,8 @@ export const routes = [
           {
             icon:  <ShoppingCartIcon {...icon} />,
             name: "Amazon",
-           
+            path:"/scrapper/amazon",
+            element:<AmazonScraper/>
           }
         ]
       },
