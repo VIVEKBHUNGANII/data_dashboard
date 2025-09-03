@@ -12,7 +12,7 @@ const GoogleMapScrapper = () => {
 
     // Uncomment if you want to send to backend
     try {
-     const response = await axios.post("http://127.0.0.1:5000/api/scrape", {
+     const response = await axios.post("https://dashboard.citydealsbazar.com/flask/api/scrape", {
       queries: [searchQuery],   // 👈 backend expects an array named "queries"
     });
     console.log(response.data);

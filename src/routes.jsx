@@ -34,6 +34,7 @@ import ProductDataReport from "./componunts/ProductDataReport";
 import MisReportTable from "./componunts/Misreport";
 import { element } from "prop-types";
 import AmazonScraper from "./componunts/scrapper/AmazonScrapper";
+import PendingData from "./componunts/listing master data/PendingData";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -150,6 +151,12 @@ export const routes = [
             name: "Incomplete Data",
             path: "listing-master-data/incomplete-data",
             element: <ListingIncomplate/>,
+         },
+          {
+            icon: <XCircleIcon {...icon} />,
+            name: "Pending Data",
+            path: "listing-master-data/pending-data",
+            element: <PendingData/>,
          },
         ]},
       {

@@ -38,7 +38,7 @@ export default function ListingDataReport() {
 
   const fetchProductsData = async () => {
     try {
-      const response = await axios("http://127.0.0.1:8000/googlemap_data");
+      const response = await axios("https://dashboard.citydealsbazar.com/flask/googlemap_data");
       const products = response.data;
 
       // Extract unique cities

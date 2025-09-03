@@ -25,18 +25,28 @@ const AmazonScraper = () => {
     setError("");
     setResult(null);
 
-    try {
-      const response = await axios.post("http://127.0.0.1:5000/api/scrape_amazon", {
-        search_term: searchTerm,
-        pages: pages,
-      });
-
-      setResult(response.data);
-    } catch (err) {
-      setError(err.response?.data?.error || "Something went wrong");
-    } finally {
-      setLoading(false);
+try {
+  const response = await axios.post(
+    "https://dashboard.citydealsbazar.com/flask/api/scrape_amazon",
+    {
+      search_term: searchTerm,
+      pages: pages,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json", // JSON body bhejne ke liye
+      },
+      withCredentials: false, // CORS issue avoid karne ke liye
     }
+  );
+
+  setResult(response.data);
+} catch (err) {
+  console.error("Error:", err);
+  setError(err.response?.data?.error || "Something went wrong");
+} finally {
+  setLoading(false);
+}
   };
 
   return (

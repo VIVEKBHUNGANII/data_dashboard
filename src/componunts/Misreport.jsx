@@ -45,7 +45,7 @@ const MisReportTable = () => {
   // Fetch data from backend
   const fetchData = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:8000/googlemap_data");
+      const response = await axios.get("https://dashboard.citydealsbazar.com/flask/googlemap_data");
       const rawData = response.data;
 
       // categories for table headers
@@ -54,7 +54,7 @@ const MisReportTable = () => {
 
       // aggregate by city
       const aggregated = transformData(rawData);
-      console.log("Aggregated Data:", aggregated);
+
       setData(aggregated);
     } catch (error) {
       console.error("Error fetching data:", error);

@@ -1,13 +1,32 @@
 import { Card, CardBody, CardHeader, Typography } from '@material-tailwind/react';
-import React, { useState } from 'react'
+import axios from 'axios';
+import React, { useEffect, useState } from 'react'
 
 const ProductComplate = () => {
    const [loading, setLoading] = useState(false);
-   const data = []; // Placeholder for data, replace with actual data fetching logic
-    const currentPage = 1; // Placeholder for current page, replace with actual pagination logic
-    const totalRecords = 0; // Placeholder for total records, replace with actual data fetching logic
-    const limit = 1000; // Placeholder for limit, replace with actual pagination logic
-    const totalPages = Math.ceil(totalRecords / limit);
+   const [data , setData] = useState([])
+   const [currentPage , setCurrentPage] = useState(1)
+   const totalRecords = 0; 
+   const limit = 1000; 
+   const totalPages = Math.ceil(totalRecords / limit);
+
+     const fetchData = async () => {
+      setLoading(true);
+      try {
+        const response = await axios(`https://dashboard.citydealsbazar.com/flask/products/complete`);
+       
+        setData(response.data.data || []);
+        // setTotalRecords(result.total_records || 0);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    useEffect(() => {
+      fetchData();
+    },[])
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12 px-4">
       {/* <div className="flex justify-between items-center mb-4">
@@ -39,7 +58,7 @@ const ProductComplate = () => {
             <table className="w-full min-w-[640px] table-auto">
               <thead>
                 <tr>
-                  {["ASIN", "Product_name","price","rating","Number_of_ratings","Brand","Seller","Top_brand","category","subcategory","sub_sub_category","category_sub_sub_sub","colour","size_options","description","link","Image_URLs","About_the_items_bullet","Product_details","Additional_Details","Overall_Details","Author","Manufacturer_Name","Manufacturer_Name"].map((head) => (
+                  {["ID","ASIN", "Product_name","price","rating","Number_of_ratings","Brand","Seller","category","subcategory","sub_sub_category","category_sub_sub_sub","colour","size_options","description","link","Image_URLs","About_the_items_bullet","Product_details","Additional_Details","Manufacturer_Name","created_at"].map((head) => (
                     <th
                       key={head}
                       className="border-b border-blue-gray-50 py-3 px-5 text-left"
@@ -62,30 +81,28 @@ const ProductComplate = () => {
 
                   return (
                     <tr key={item.id}>
-                      {/* <td className={className}>{item.id}</td>
+                     <td className={className}>{item.id}</td>
+                      <td className={className}>{item.ASIN}</td>
+                      <td className={className}>{item.Product_name}</td>
+                      <td className={className}>{item.price}</td>
+                      <td className={className}>{item.rating}</td>
+                      <td className={className}>{item.Number_of_ratings}</td>
+                      <td className={className}>{item.Brand}</td>
+                      <td className={className}>{item.Seller}</td>
                       <td className={className}>{item.category}</td>
-                      <td className={className}>{item.city}</td>
-                      <td className={className}>{item.name}</td>
-                      <td className={className}>{item.area}</td>
-                      <td className={className}>{item.address}</td>
-                      <td className={className}>{item.phone_no_1}</td>
-                      <td className={className}>{item.phone_no_2}</td>
-                      <td className={className}>{item.url}</td>
-                      <td className={className}>{item.ratings}</td>
-                      <td className={className}>{item.sub_category}</td>
-                      <td className={className}>{item.state}</td>
-                      <td className={className}>{item.country}</td>
-                      <td className={className}>{item.email}</td>
-                      <td className={className}>{item.latitude}</td>
-                      <td className={className}>{item.longitude}</td> */}
-                      {/* <td className={className}>
-                        <Chip
-                          variant="gradient"
-                          color="green"
-                          value="active"
-                          className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                        />
-                      </td> */}
+                      <td className={className}>{item.subcategory}</td>
+                      <td className={className}>{item.sub_sub_category}</td>
+                      <td className={className}>{item.category_sub_sub_sub}</td>
+                      <td className={className}>{item.colour}</td>
+                      <td className={className}>{item.size_options}</td>
+                      <td className={className}>{item.description}</td>
+                      <td className={className}>{item.link}</td>
+                      <td className={className}>{item.Image_URLs}</td> 
+                      <td className={className}>{item.About_the_items_bullet}</td> 
+                      <td className={className}>{item.Manufacturer_Name}</td> 
+                      <td className={className}>{item.Manufacturer_Name}</td> 
+                      <td className={className}>{item.Manufacturer_Name}</td> 
+                      <td className={className}>{item.created_at}</td> 
                     </tr>
                   );
                 })}
