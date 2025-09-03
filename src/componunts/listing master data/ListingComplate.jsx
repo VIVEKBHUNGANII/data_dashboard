@@ -3,34 +3,34 @@ import {
   Card,
   CardHeader,
   Typography,
- 
   CardBody,
   Input,
+  Button,
 } from "@material-tailwind/react";
 import axios from "axios";
-
 
 const ListingComplate = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-   const [citySearch, setCitySearch] = useState("");
-    const [categorySearch, setCategorySearch] = useState("");
+  const [citySearch, setCitySearch] = useState("");
+  const [categorySearch, setCategorySearch] = useState("");
 
- 
+  // Pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10; // per page rows count
 
-useEffect(() => {
-     fetchData() 
-}, []);
-
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   const fetchData = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("");
+      const response = await axios.get(
+        "https://dashboard.citydealsbazar.com/flask/items/complete"
+      );
       const result = response.data;
-     
-      setData(result|| []);
-     
+      setData(result.items || []);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -38,34 +38,62 @@ useEffect(() => {
     }
   };
 
-   
+  // --- Filter Logic ---
+  const filteredData = data.filter((item) => {
+    const cityMatch = citySearch
+      ? item.city?.toLowerCase().includes(citySearch.toLowerCase())
+      : true;
+    const categoryMatch = categorySearch
+      ? item.category?.toLowerCase().includes(categorySearch.toLowerCase())
+      : true;
+    return cityMatch && categoryMatch;
+  });
+
+  // --- Pagination Logic ---
+  const indexOfLastRow = currentPage * rowsPerPage;
+  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
+  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
+  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
+
+  const handlePrev = () => {
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
+  };
+
+  const handleNext = () => {
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  };
+
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12 px-4">
+      {/* Search Inputs */}
       <div className="flex justify-end items-center">
-        {/* <Typography variant="h4" color="blue-gray">
-          Listing Complete Data
-        </Typography> */}
         <div className="w-56 mr-3">
           <Input
-          label="Search City"
-          value={citySearch}
-          onChange={(e) => setCitySearch(e.target.value)}
-          crossOrigin=""
-          className="h-12"
+            label="Search City"
+            value={citySearch}
+            onChange={(e) => {
+              setCitySearch(e.target.value);
+              setCurrentPage(1); // reset to first page
+            }}
+            crossOrigin=""
+            className="h-12"
           />
         </div>
         <div className="w-56">
           <Input
-          label="Search Category"
-          value={categorySearch}
-          onChange={(e) => setCategorySearch(e.target.value)}
-          crossOrigin=""
-          className="h-12"
+            label="Search Category"
+            value={categorySearch}
+            onChange={(e) => {
+              setCategorySearch(e.target.value);
+              setCurrentPage(1); // reset to first page
+            }}
+            crossOrigin=""
+            className="h-12"
           />
-        </div>                          
-                       
+        </div>
       </div>
 
+      {/* Table Section */}
       <Card>
         <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
           <Typography variant="h6" color="white">
@@ -76,63 +104,133 @@ useEffect(() => {
           {loading ? (
             <p className="text-center text-blue-500 font-semibold">Loading...</p>
           ) : (
-            <table className="w-full min-w-[640px] table-auto">
-              <thead>
-                <tr>
-                  {["ID","name","address","website","phone number","reviews count","reviews average","category","sub category","city","state","area","created_at"].map((head) => (
-                    <th
-                      key={head}
-                      className="border-b border-blue-gray-50 py-3 px-5 text-left"
-                    >
-                      <Typography
-                        variant="small"
-                        className="text-[11px] font-bold uppercase text-blue-gray-400"
+            <div>
+              <table className="w-full min-w-[640px] table-auto">
+                <thead>
+                  <tr>
+                    {[
+                      "name",
+                      "address",
+                      "category",
+                      "sub category",
+                      "city",
+                      "area",
+                      "state",
+                      "phone_no_1",
+                      "phone_no_2",
+                      "phone_no_3",
+                      "ratings",
+                      "source",
+                      "country",
+                      "email",
+                      "latitude",
+                      "longitude",
+                      "reviews",
+                      "facebook_url",
+                      "twitter_url",
+                      "linkedin_url",
+                      "description",
+                      "pincode",
+                      "virtual_phone_no",
+                      "whatsapp_no",
+                      "avg_spent",
+                      "cost_for_two",
+                    ].map((head) => (
+                      <th
+                        key={head}
+                        className="border-b border-blue-gray-50 py-3 px-5 text-left"
                       >
-                        {head}
-                      </Typography>
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((item, idx) => {
-                  const className = `py-3 px-5 ${
-                    idx === data.length - 1 ? "" : "border-b border-blue-gray-50"
-                  }`;
+                        <Typography
+                          variant="small"
+                          className="text-[11px] font-bold uppercase text-blue-gray-400"
+                        >
+                          {head}
+                        </Typography>
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentRows.length > 0 ? (
+                    currentRows.map((item, idx) => {
+                      const className = `py-3 px-5 ${
+                        idx === currentRows.length - 1
+                          ? ""
+                          : "border-b border-blue-gray-50"
+                      }`;
 
-                  return (
-                    <tr key={item.id}>
-                      <td className={className}>{item.id}</td>
-                      <td className={className}>{item.name}</td>
-                      <td className={className}>{item.address}</td>
-                      <td className={className}>{item.website}</td>
-                      <td className={className}>{item.phone_number}</td>
-                      <td className={className}>{item.reviews_count}</td>
-                      <td className={className}>{item.reviews_average}</td>
-                      <td className={className}>{item.category}</td>
-                      <td className={className}>{item.subcategory}</td>
-                      <td className={className}>{item.city}</td>
-                      <td className={className}>{item.state}</td>
-                      <td className={className}>{item.area}</td>
-                      <td className={className}>{item.created_at}</td>
-                      {/* <td className={className}>
-                        <Chip
-                          variant="gradient"
-                          color="green"
-                          value="active"
-                          className="py-0.5 px-2 text-[11px] font-medium w-fit"
-                        />
-                      </td> */}
+                      return (
+                        <tr key={item.name}>
+                          <td className={className}>{item.name}</td>
+                          <td className={className}>{item.address}</td>
+                          <td className={className}>{item.category}</td>
+                          <td className={className}>{item.sub_category}</td>
+                          <td className={className}>{item.city}</td>
+                          <td className={className}>{item.area}</td>
+                          <td className={className}>{item.state}</td>
+                          <td className={className}>{item.phone_no_1}</td>
+                          <td className={className}>{item.phone_no_2}</td>
+                          <td className={className}>{item.phone_no_3}</td>
+                          <td className={className}>{item.ratings}</td>
+                          <td className={className}>{item.source}</td>
+                          <td className={className}>{item.country}</td>
+                          <td className={className}>{item.email}</td>
+                          <td className={className}>{item.latitude}</td>
+                          <td className={className}>{item.longitude}</td>
+                          <td className={className}>{item.reviews}</td>
+                          <td className={className}>{item.facebook_url}</td>
+                          <td className={className}>{item.twitter_url}</td>
+                          <td className={className}>{item.linkedin_url}</td>
+                          <td className={className}>{item.description}</td>
+                          <td className={className}>{item.pincode}</td>
+                          <td className={className}>{item.virtual_phone_no}</td>
+                          <td className={className}>{item.whatsapp_no}</td>
+                          <td className={className}>{item.avg_spent}</td>
+                          <td className={className}>{item.cost_for_two}</td>
+                        </tr>
+                      );
+                    })
+                  ) : (
+                    <tr>
+                      <td
+                        colSpan="26"
+                        className="text-center py-4 text-red-500 font-semibold"
+                      >
+                        No matching results found
+                      </td>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Pagination Controls */}
+              {filteredData.length > 0 && (
+                <div className="flex justify-between items-center mt-4 px-4">
+                  <Button
+                    size="sm"
+                    variant="outlined"
+                    onClick={handlePrev}
+                    disabled={currentPage === 1}
+                  >
+                    Previous
+                  </Button>
+                  <Typography variant="small" className="text-gray-700">
+                    Page {currentPage} of {totalPages}
+                  </Typography>
+                  <Button
+                    size="sm"
+                    variant="outlined"
+                    onClick={handleNext}
+                    disabled={currentPage === totalPages}
+                  >
+                    Next
+                  </Button>
+                </div>
+              )}
+            </div>
           )}
         </CardBody>
       </Card>
-
-      
     </div>
   );
 };
