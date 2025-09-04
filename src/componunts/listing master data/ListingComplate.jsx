@@ -18,7 +18,8 @@ const ListingComplate = () => {
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const rowsPerPage = 10; // per page rows count
+  const [totalItems, setTotalItems] = useState(0); // ✅ total data count
+  const rowsPerPage = 100; // per page rows count
 
   useEffect(() => {
     fetchData(currentPage);
@@ -28,7 +29,7 @@ const ListingComplate = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://dashboard.citydealsbazar.com/flask/items/complete`,
+        `https://dashboard.citydealsbazar.com/flask/items/complete?page=${currentPage}&limit=${rowsPerPage}`,
         {
           params: {
             page,
@@ -38,9 +39,10 @@ const ListingComplate = () => {
           },
         }
       );
-
+      //  console.log("datass",response.data.items);
       setData(response.data.items || []);
-      setTotalPages(response.data.total_pages || 1);
+      setTotalPages(response.data.pages || 1);
+      setTotalItems(response.data.total || 0); // ✅ store total count
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -93,7 +95,7 @@ const ListingComplate = () => {
             Listing Complete Data
           </Typography>
           <Typography variant="h6" color="white" className="ml-auto">
-            Total Pages: {totalPages}
+            Total: {totalItems} {/* ✅ total record count */}
           </Typography>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
