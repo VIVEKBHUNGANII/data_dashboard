@@ -1,4 +1,5 @@
 import { useLocation, Link } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import {
   Navbar,
   Typography,
@@ -33,6 +34,13 @@ export function DashboardNavbar() {
   // const [layout, page] = pathname.split("/").filter((el) => el !== "");
   const pathnames = pathname.split("/").filter((x) => x);
 
+
+  const handlelogout = () => {
+    localStorage.removeItem("token");
+    Navigate("/auth/sign-in");
+  };
+
+  
 
   return (
     <Navbar
@@ -105,7 +113,7 @@ export function DashboardNavbar() {
           >
             <Bars3Icon strokeWidth={3} className="h-6 w-6 text-blue-gray-500" />
           </IconButton>
-          <Link to="/auth/sign-in">
+          {/* <Link to="/auth/sign-in">
             <Button
               variant="text"
               color="blue-gray"
@@ -113,6 +121,24 @@ export function DashboardNavbar() {
             >
               <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
               Sign In
+            </Button>
+            <IconButton
+              variant="text"
+              color="blue-gray"
+              className="grid xl:hidden"
+            >
+              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+            </IconButton>
+          </Link> */}
+          <Link to="/auth/sign-in">
+            <Button
+              variant="text"
+              color="blue-gray"
+              className="hidden items-center gap-1 px-4 xl:flex normal-case"
+              onClick={handlelogout}
+            >
+              <UserCircleIcon className="h-5 w-5 text-blue-gray-500" />
+              Log Out
             </Button>
             <IconButton
               variant="text"
