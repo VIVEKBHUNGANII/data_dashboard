@@ -17,43 +17,44 @@ const ListingIncomplate = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 10; // rows per page
+  const [rowsPerPage, setRowsPerPage] = useState(100);
+  const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage, rowsPerPage, citySearch, categorySearch]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://dashboard.citydealsbazar.com/flask/items/incomplete"
+        `https://dashboard.citydealsbazar.com/flask/items/incomplete?page=${currentPage}&limit=${rowsPerPage}`
       );
       const result = response.data;
-      setData(result.items || []);
+
+      let filtered = result.items || [];
+
+      // --- Frontend filter on city & category ---
+      filtered = filtered.filter((item) => {
+        const cityMatch = citySearch
+          ? item.city?.toLowerCase().includes(citySearch.toLowerCase())
+          : true;
+        const categoryMatch = categorySearch
+          ? item.category?.toLowerCase().includes(categorySearch.toLowerCase())
+          : true;
+        return cityMatch && categoryMatch;
+      });
+
+      setData(filtered);
+      setTotalPages(result.pages);
+      setTotalCount(result.total); // ✅ from backend
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  // --- Filter Logic ---
-  const filteredData = data.filter((item) => {
-    const cityMatch = citySearch
-      ? item.city?.toLowerCase().includes(citySearch.toLowerCase())
-      : true;
-    const categoryMatch = categorySearch
-      ? item.category?.toLowerCase().includes(categorySearch.toLowerCase())
-      : true;
-    return cityMatch && categoryMatch;
-  });
-
-  // --- Pagination Logic ---
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -95,9 +96,12 @@ const ListingIncomplate = () => {
 
       {/* Table Section */}
       <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6 ">
+        <CardHeader variant="gradient" color="gray" className="mb-8 p-6 flex">
           <Typography variant="h6" color="white">
             Listing Incomplete Data
+          </Typography>
+          <Typography variant="h6" color="white" className="ml-auto">
+            Total: {totalCount} {/* ✅ backend total count */}
           </Typography>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
@@ -151,10 +155,10 @@ const ListingIncomplate = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentRows.length > 0 ? (
-                    currentRows.map((item, idx) => {
+                  {data.length > 0 ? (
+                    data.map((item, idx) => {
                       const className = `py-3 px-5 ${
-                        idx === currentRows.length - 1
+                        idx === data.length - 1
                           ? ""
                           : "border-b border-blue-gray-50"
                       }`;
@@ -204,7 +208,7 @@ const ListingIncomplate = () => {
               </table>
 
               {/* Pagination Controls */}
-              {filteredData.length > 0 && (
+              {totalCount > 0 && (
                 <div className="flex justify-between items-center mt-4 px-4">
                   <Button
                     size="sm"

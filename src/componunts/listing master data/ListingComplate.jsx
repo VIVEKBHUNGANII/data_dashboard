@@ -17,43 +17,36 @@ const ListingComplate = () => {
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const rowsPerPage = 10; // per page rows count
 
   useEffect(() => {
-    fetchData();
-  }, []);
+    fetchData(currentPage);
+  }, [currentPage, citySearch, categorySearch]);
 
-  const fetchData = async () => {
+  const fetchData = async (page) => {
     setLoading(true);
     try {
       const response = await axios.get(
-        "https://dashboard.citydealsbazar.com/flask/items/complete"
+        `https://dashboard.citydealsbazar.com/flask/items/complete`,
+        {
+          params: {
+            page,
+            limit: rowsPerPage,
+            city: citySearch,
+            category: categorySearch,
+          },
+        }
       );
-      const result = response.data;
-      setData(result.items || []);
+
+      setData(response.data.items || []);
+      setTotalPages(response.data.total_pages || 1);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
   };
-
-  // --- Filter Logic ---
-  const filteredData = data.filter((item) => {
-    const cityMatch = citySearch
-      ? item.city?.toLowerCase().includes(citySearch.toLowerCase())
-      : true;
-    const categoryMatch = categorySearch
-      ? item.category?.toLowerCase().includes(categorySearch.toLowerCase())
-      : true;
-    return cityMatch && categoryMatch;
-  });
-
-  // --- Pagination Logic ---
-  const indexOfLastRow = currentPage * rowsPerPage;
-  const indexOfFirstRow = indexOfLastRow - rowsPerPage;
-  const currentRows = filteredData.slice(indexOfFirstRow, indexOfLastRow);
-  const totalPages = Math.ceil(filteredData.length / rowsPerPage);
 
   const handlePrev = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
@@ -73,7 +66,7 @@ const ListingComplate = () => {
             value={citySearch}
             onChange={(e) => {
               setCitySearch(e.target.value);
-              setCurrentPage(1); // reset to first page
+              setCurrentPage(1); // reset page
             }}
             crossOrigin=""
             className="h-12"
@@ -85,7 +78,7 @@ const ListingComplate = () => {
             value={categorySearch}
             onChange={(e) => {
               setCategorySearch(e.target.value);
-              setCurrentPage(1); // reset to first page
+              setCurrentPage(1); // reset page
             }}
             crossOrigin=""
             className="h-12"
@@ -95,9 +88,12 @@ const ListingComplate = () => {
 
       {/* Table Section */}
       <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6">
+        <CardHeader variant="gradient" color="gray" className="mb-8 p-6 flex">
           <Typography variant="h6" color="white">
             Listing Complete Data
+          </Typography>
+          <Typography variant="h6" color="white" className="ml-auto">
+            Total Pages: {totalPages}
           </Typography>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
@@ -151,16 +147,16 @@ const ListingComplate = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {currentRows.length > 0 ? (
-                    currentRows.map((item, idx) => {
+                  {data.length > 0 ? (
+                    data.map((item, idx) => {
                       const className = `py-3 px-5 ${
-                        idx === currentRows.length - 1
+                        idx === data.length - 1
                           ? ""
                           : "border-b border-blue-gray-50"
                       }`;
 
                       return (
-                        <tr key={item.name}>
+                        <tr key={item.id || idx}>
                           <td className={className}>{item.name}</td>
                           <td className={className}>{item.address}</td>
                           <td className={className}>{item.category}</td>
@@ -204,7 +200,7 @@ const ListingComplate = () => {
               </table>
 
               {/* Pagination Controls */}
-              {filteredData.length > 0 && (
+              {data.length > 0 && (
                 <div className="flex justify-between items-center mt-4 px-4">
                   <Button
                     size="sm"
