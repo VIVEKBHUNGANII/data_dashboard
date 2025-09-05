@@ -19,7 +19,7 @@ const ListingComplate = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0); // ✅ total data count
-  const rowsPerPage = 100; // per page rows count
+  const rowsPerPage = 25; // per page rows count
 
   useEffect(() => {
     fetchData(currentPage);
@@ -29,7 +29,7 @@ const ListingComplate = () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://dashboard.citydealsbazar.com/flask/items/complete?page=${currentPage}&limit=${rowsPerPage}`,
+        `https://dashboard.citydealsbazar.com/flask/items/complete`,
         {
           params: {
             page,
