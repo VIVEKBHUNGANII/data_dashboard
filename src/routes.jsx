@@ -34,7 +34,8 @@ import ProductDataReport from "./componunts/ProductDataReport";
 import MisReportTable from "./componunts/Misreport";
 import { element } from "prop-types";
 import AmazonScraper from "./componunts/scrapper/AmazonScrapper";
-import PendingData from "./componunts/listing master data/PendingData";
+import DuplicateData from "./componunts/listing master data/DuplicateData";
+import OthersDataImport from "./componunts/data import/OthersDataImport";
 
 const icon = {
   className: "w-5 h-5 text-inherit",
@@ -68,7 +69,7 @@ export const routes = [
       },
       {
         icon: <ArrowUpTrayIcon {...icon} />,
-        name: "Data Imports",
+        name: "Upload Data",
         children: [
           {
             icon: <DocumentTextIcon {...icon} />,
@@ -80,7 +81,12 @@ export const routes = [
             name: "Product Data",
             path: "/data-imports/product-data",
             element: <ProductDataImport />, // Placeholder for Product Data page
-          },
+          },{
+            icon: <DocumentTextIcon {...icon} />,
+            name: "Others Data",
+            path: "/data-imports/others-data",
+            element: <OthersDataImport />, // Placeholder for Listing Data page
+          }
         ] 
       },
       {
@@ -154,9 +160,9 @@ export const routes = [
          },
           {
             icon: <XCircleIcon {...icon} />,
-            name: "Pending Data",
-            path: "listing-master-data/pending-data",
-            element: <PendingData/>,
+            name: "Duplicate Data",
+            path: "listing-master-data/duplicate-data",
+            element: <DuplicateData/>,
          },
         ]},
       {

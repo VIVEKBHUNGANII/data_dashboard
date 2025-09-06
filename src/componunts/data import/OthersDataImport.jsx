@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import axios from "axios";
+import axios from 'axios';
+import React, { useState } from 'react'
 
-const ProductDataImport = () => {
-  const [file, setFile] = useState(null);
+const OthersDataImport = () => {
+const [file, setFile] = useState(null);
   const [loading, setLoading] = useState(false);
 
   // Handle file change
@@ -26,7 +26,7 @@ const ProductDataImport = () => {
     try {
       setLoading(true); // start loading
       const response = await axios.post(
-        "http://127.0.0.1:5000/upload-csv_product_data",
+        "https://dashboard.citydealsbazar.com/flask/upload_others_csv",
         formData,
         {
           headers: {
@@ -48,7 +48,7 @@ const ProductDataImport = () => {
 
   return (
     <div className="p-6 max-w-md bg-white rounded-lg shadow mt-4">
-      <h2 className="text-xl font-bold mb-4">Upload Product CSV File</h2>
+      <h2 className="text-xl font-bold mb-4">Upload Others Data CSV</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="file"
@@ -97,6 +97,6 @@ const ProductDataImport = () => {
       </form>
     </div>
   );
-};
+}
 
-export default ProductDataImport;
+export default OthersDataImport

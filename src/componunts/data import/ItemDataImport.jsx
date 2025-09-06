@@ -26,7 +26,7 @@ const ItemDataImport = () => {
     try {
       setLoading(true); // start loading
       const response = await axios.post(
-        "http://localhost:8000//upload-csv_item_data", // <-- your API endpoint
+        "http://127.0.0.1:5000/upload_csv_item_data", // <-- your API endpoint
         formData,
         {
           headers: {

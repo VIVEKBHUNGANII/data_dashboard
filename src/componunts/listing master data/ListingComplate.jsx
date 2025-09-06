@@ -8,6 +8,7 @@ import {
   Button,
 } from "@material-tailwind/react";
 import axios from "axios";
+import { downloadCSV } from "@/utils/Itemcsvdownload";
 
 const ListingComplate = () => {
   const [data, setData] = useState([]);
@@ -39,7 +40,18 @@ const ListingComplate = () => {
           },
         }
       );
-      //  console.log("datass",response.data.items);
+      // const response = await axios.get(
+      //   `http://127.0.0.1:5000/items/complete`,
+      //   {
+      //     params: {
+      //       page,
+      //       limit: rowsPerPage,
+      //       city: citySearch,
+      //       category: categorySearch,
+      //     },
+      //   }
+      // );
+      // console.log("datass",response.data.items);
       setData(response.data.items || []);
       setTotalPages(response.data.pages || 1);
       setTotalItems(response.data.total || 0); // ✅ store total count
@@ -90,13 +102,45 @@ const ListingComplate = () => {
 
       {/* Table Section */}
       <Card>
-        <CardHeader variant="gradient" color="gray" className="mb-8 p-6 flex">
+        <CardHeader
+          variant="gradient"
+          color="gray"
+          className="mb-8 p-4 flex items-center justify-between"
+        >
+          {/* Left: Title */}
           <Typography variant="h6" color="white">
             Listing Complete Data
           </Typography>
-          <Typography variant="h6" color="white" className="ml-auto">
-            Total: {totalItems} {/* ✅ total record count */}
-          </Typography>
+
+          {/* Right: Button + Total */}
+          <div className="flex items-center gap-4">
+            <Button
+              variant="outlined"
+              color="white"
+              className="flex items-center gap-2"
+              onClick={() => downloadCSV("complete")}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="h-5 w-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
+                />
+              </svg>
+              Download Csv
+            </Button>
+
+            <Typography variant="h6" color="white">
+              Total: {totalItems}
+            </Typography>
+          </div>
         </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
           {loading ? (
@@ -106,7 +150,7 @@ const ListingComplate = () => {
               <table className="w-full min-w-[640px] table-auto">
                 <thead>
                   <tr>
-                    {[
+                    {["Id",
                       "name",
                       "address",
                       "category",
@@ -159,6 +203,7 @@ const ListingComplate = () => {
 
                       return (
                         <tr key={item.id || idx}>
+                          <td className={className}>{item.id}</td>
                           <td className={className}>{item.name}</td>
                           <td className={className}>{item.address}</td>
                           <td className={className}>{item.category}</td>

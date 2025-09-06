@@ -10,49 +10,30 @@ import {
 import axios from "axios";
 import { downloadCSV } from "@/utils/Itemcsvdownload";
 
-const ListingIncomplate = () => {
+const DuplicateData = () => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [citySearch, setCitySearch] = useState("");
-  const [categorySearch, setCategorySearch] = useState("");
 
   // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
-  const [totalPages, setTotalPages] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const rowsPerPage = 25; // per page rows count
 
   useEffect(() => {
     fetchData();
-  }, [currentPage, rowsPerPage, citySearch, categorySearch]);
+  }, [currentPage]);
 
   const fetchData = async () => {
     setLoading(true);
     try {
       const response = await axios.get(
-        `https://dashboard.citydealsbazar.com/flask/items/incomplete?page=${currentPage}&limit=${rowsPerPage}`
+        `https://dashboard.citydealsbazar.com/flask/items/duplicates?page=${currentPage}&limit=${rowsPerPage}`
       );
-      // const response = await axios.get(
-      //   `http://127.0.0.1:5000/items/incomplete?page=${currentPage}&limit=${rowsPerPage}`
-      // );
-      const result = response.data;
 
-      let filtered = result.items || [];
-
-      // --- Frontend filter on city & category ---
-      filtered = filtered.filter((item) => {
-        const cityMatch = citySearch
-          ? item.city?.toLowerCase().includes(citySearch.toLowerCase())
-          : true;
-        const categoryMatch = categorySearch
-          ? item.category?.toLowerCase().includes(categorySearch.toLowerCase())
-          : true;
-        return cityMatch && categoryMatch;
-      });
-
-      setData(filtered);
-      setTotalPages(result.pages);
-      setTotalCount(result.total); // ✅ from backend
+      setData(response.data.items || []);
+      setTotalPages(response.data.total_pages || 1);
+      setTotalItems(response.data.total || 0);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -70,76 +51,45 @@ const ListingIncomplate = () => {
 
   return (
     <div className="mt-12 mb-8 flex flex-col gap-12 px-4">
-      {/* Search Inputs */}
-      <div className="flex justify-end items-center">
-        <div className="w-56 mr-3">
-          <Input
-            label="Search City"
-            value={citySearch}
-            onChange={(e) => {
-              setCitySearch(e.target.value);
-              setCurrentPage(1); // reset to first page
-            }}
-            crossOrigin=""
-            className="h-12"
-          />
-        </div>
-        <div className="w-56">
-          <Input
-            label="Search Category"
-            value={categorySearch}
-            onChange={(e) => {
-              setCategorySearch(e.target.value);
-              setCurrentPage(1); // reset to first page
-            }}
-            crossOrigin=""
-            className="h-12"
-          />
-        </div>
-      </div>
-
-      {/* Table Section */}
       <Card>
-       <CardHeader
+        <CardHeader
           variant="gradient"
           color="gray"
           className="mb-8 p-4 flex items-center justify-between"
-          >
-          {/* Left: Title */}
+        >
           <Typography variant="h6" color="white">
-            Listing Incomplete Data
+            Listing Duplicate Data
           </Typography>
-          
-          {/* Right: Button + Total */}
+
           <div className="flex items-center gap-4">
             <Button
               variant="outlined"
               color="white"
               className="flex items-center gap-2"
-              onClick={() => downloadCSV("incomplete")}
-             >
-             <svg
+              onClick={() => downloadCSV("duplicates")}
+            >
+              <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
                 className="h-5 w-5"
-                >
+              >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
                 />
               </svg>
-                Download Csv
+              Download Csv
             </Button>
-              <Typography variant="h6" color="white">
-                Total: {totalCount}
-              </Typography>
+
+            <Typography variant="h6" color="white">
+              Total: {totalItems}
+            </Typography>
           </div>
-        </CardHeader>       
-                  
+        </CardHeader>
         <CardBody className="overflow-x-scroll px-0 pt-0 pb-2">
           {loading ? (
             <p className="text-center text-blue-500 font-semibold">Loading...</p>
@@ -148,7 +98,8 @@ const ListingIncomplate = () => {
               <table className="w-full min-w-[640px] table-auto">
                 <thead>
                   <tr>
-                    {["id",
+                    {[
+                      "id",
                       "name",
                       "address",
                       "category",
@@ -200,7 +151,7 @@ const ListingIncomplate = () => {
                       }`;
 
                       return (
-                        <tr key={item.id}>
+                        <tr key={item.id || idx}>
                           <td className={className}>{item.id}</td>
                           <td className={className}>{item.name}</td>
                           <td className={className}>{item.address}</td>
@@ -245,7 +196,7 @@ const ListingIncomplate = () => {
               </table>
 
               {/* Pagination Controls */}
-              {totalCount > 0 && (
+              {data.length > 0 && (
                 <div className="flex justify-between items-center mt-4 px-4">
                   <Button
                     size="sm"
@@ -276,4 +227,4 @@ const ListingIncomplate = () => {
   );
 };
 
-export default ListingIncomplate;
+export default DuplicateData;

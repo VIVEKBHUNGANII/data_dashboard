@@ -17,7 +17,7 @@ const ProductIncomplate = () => {
       setLoading(true);
       try {
         const response = await axios(`https://dashboard.citydealsbazar.com/flask/products/incomplete`);
-        console.log("result is ",response.data.data)
+       
         setData(response.data.data || []);
         // setTotalRecords(result.total_records || 0);
       } catch (error) {
